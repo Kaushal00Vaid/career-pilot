@@ -1,3 +1,10 @@
+# [1.275.0](https://github.com/anurag3407/career-pilot/compare/v1.274.3...v1.275.0) (2026-07-27)
+
+
+### Features
+
+* Add PWA Support and Offline Caching ([#4438](https://github.com/anurag3407/career-pilot/issues/4438)) ([f73cf6a](https://github.com/anurag3407/career-pilot/commit/f73cf6abe37a28273161953f99dcbfbf7cd2eaee))
+
 ## [1.274.3](https://github.com/anurag3407/career-pilot/compare/v1.274.2...v1.274.3) (2026-07-24)
 
 
