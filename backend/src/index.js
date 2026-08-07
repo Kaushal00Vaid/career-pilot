@@ -56,7 +56,7 @@ import { initializeSocket } from './config/socket.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 
-import { connectDB as baseConnectDB } from './config/database.js';
+import { connectDB as baseConnectDB, disconnectDB, checkDBHealth } from './config/database.js';
 import { initJobFetcher } from './services/jobFetcher.js';
 import JobAlert from './models/JobAlert.model.js';
 import { initGitHubSyncCron } from './services/portfolioGitHubSync.js';
@@ -299,10 +299,13 @@ app.use('/api/webhooks', webhookRoutes);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
+app.get('/health', async (req, res) => {
+  const dbHealth = await checkDBHealth();
+  const statusCode = dbHealth.ok ? 200 : 503;
+  res.status(statusCode).json({
+    status: dbHealth.ok ? 'OK' : 'DEGRADED',
     timestamp: new Date().toISOString(),
+    database: dbHealth,
   });
 });
 
@@ -434,6 +437,7 @@ if (!process.env.NETLIFY && !process.env.VERCEL) {
 
 const shutdown = async (signal) => {
     console.log(`\n📥 Received ${signal}, shutting down gracefully...`);
+    await disconnectDB();
     await redisManager.shutdown();
     console.log('👋 Server shutdown complete');
     process.exit(0);
